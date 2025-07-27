@@ -9,16 +9,16 @@ import (
 	"effmob/internal/storage/postgresClient"
 )
 
-func DeleteSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
+func GetSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)
 		if err != nil {
-			writeResponseWithError(logger, w, http.StatusBadRequest, err.Error())
-			logger.Error("DeleteSubscriptionHandler: cannot get id from URL", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			logger.Error("GetSubscriptionsHandler: cannot get id from URL", zap.Error(err))
 			return
 		}
 
-		err = pc.DeleteSubscription(id)
+		subscriptions, err := pc.GetSubscriptions(id)
 		if err != nil {
 			switch {
 			case errors.Is(err, postgresClient.ErrSubscriptionNotFound):
@@ -27,10 +27,10 @@ func DeleteSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresCli
 				writeResponseWithError(logger, w, http.StatusInternalServerError, err.Error())
 			}
 
-			logger.Error("DeleteSubscriptionHandler:", zap.Error(err))
+			logger.Error("GetSubscriptionsHandler:", zap.Error(err))
 			return
 		}
 
-		writeJSONResponse(logger, w, http.StatusOK, nil)
+		writeJSONResponse(logger, w, http.StatusOK, subscriptions)
 	}
 }

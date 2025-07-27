@@ -42,5 +42,6 @@ type PostgresService struct {
 type PostgresClient interface {
 	SaveSubscription(*api.Subscription) (int, error)
 	DeleteSubscription(int) error
+	GetSubscriptions(int) (*api.Subscription, error)
 	Close()
 }

@@ -40,8 +40,6 @@ func main() {
 		log.Fatal("failed to initialize config", err)
 	}
 
-	fmt.Println(config.Postgres)
-
 	logger, err := llogger.New(&config.Logger)
 	if err != nil {
 		log.Fatal("failed to initialize logger", err)
@@ -62,6 +60,7 @@ func main() {
 
 	router.Post("/subscription", handlers.AddSubscriptionHandler(logger, postgresClient))
 	router.Delete("/subscription/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscription/{id}", handlers.GetSubscriptionsHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),

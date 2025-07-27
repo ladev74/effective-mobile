@@ -10,6 +10,7 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
@@ -81,6 +82,31 @@ func (ps *PostgresService) DeleteSubscription(id int) error {
 	}
 
 	return nil
+}
+
+func (ps *PostgresService) GetSubscriptions(id int) (*api.Subscription, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
+	defer cancel()
+
+	res := &api.Subscription{}
+
+	err := ps.pool.QueryRow(ctx, queryForGetSubscriptions, id).Scan(
+		&res.ServiceName,
+		&res.Price,
+		&res.UserID,
+		&res.StartDate,
+		&res.EndDate,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			ps.logger.Error(ErrSubscriptionNotFound.Error())
+			return nil, ErrSubscriptionNotFound
+		}
+		ps.logger.Error("GetSubscriptions: failed to retrieve subscription", zap.Error(err))
+		return nil, fmt.Errorf("GetSubscriptions: failed to retrieve subscription: %w", err)
+	}
+
+	return res, nil
 }
 
 func (ps *PostgresService) Close() {

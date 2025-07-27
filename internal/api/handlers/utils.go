@@ -3,38 +3,49 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
 type response struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
-	Id      int    `json:"id,omitempty"`
+	Status  string      `json:"status"`
+	Message string      `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
-func writeResponseWithId(logger *zap.Logger, w http.ResponseWriter, statusCode, id int) {
+func parseIdParam(r *http.Request) (int, error) {
+	idStr := chi.URLParam(r, "id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func writeJSONResponse(logger *zap.Logger, w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
 	resp := response{
 		Status: http.StatusText(statusCode),
-		Id:     id,
+		Data:   data,
 	}
 
-	err := json.NewEncoder(w).Encode(resp)
-	if err != nil {
-		logger.Warn("AddSubscriptionHandler: cannot send report to caller", zap.Error(err))
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		logger.Warn("writeJSONResponse: failed to encode response", zap.Error(err))
 	}
 }
 
-func writeResponseWithError(logger *zap.Logger, w http.ResponseWriter, statusCode int, message string, id int) {
+func writeResponseWithError(logger *zap.Logger, w http.ResponseWriter, statusCode int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
 	resp := response{
 		Message: message,
-		Id:      id,
 		Status:  http.StatusText(statusCode),
 	}
 
