@@ -35,6 +35,6 @@ type PostgresService struct {
 
 // PostgresClient defines an interface for storing and retrieving subscription in a PostgreSQL database.
 type PostgresClient interface {
-	SaveSubscription(*api.Subscription) error
+	SaveSubscription(*api.Subscription) (int, error)
 	Close()
 }

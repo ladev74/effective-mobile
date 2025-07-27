@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -18,7 +19,7 @@ func NewAddSubscription(logger *zap.Logger, pc postgresClient.PostgresClient) fu
 			return
 		}
 
-		err = pc.SaveSubscription(subscription)
+		id, err := pc.SaveSubscription(subscription)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			logger.Error("NewAddSubscription:", zap.Error(err))
@@ -27,7 +28,13 @@ func NewAddSubscription(logger *zap.Logger, pc postgresClient.PostgresClient) fu
 
 		w.Header().Set("Content-Type", "application/json")
 		// TODO: добавить перенос строки, вынести в отдельную функцию (создать структуру статус?)
-		_, err = w.Write([]byte(`"status":"OK"`))
+		//err := json.NewEncoder(w).Encode(resp)
+
+		err = json.NewEncoder(w).Encode(struct {
+			id int `json:"id"`
+		}{
+			id: id,
+		})
 		if err != nil {
 			logger.Warn("NewAddSubscription: cannot send report to caller", zap.Error(err))
 		}

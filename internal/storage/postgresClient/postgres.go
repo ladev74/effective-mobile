@@ -44,28 +44,25 @@ func New(ctx context.Context, config *Config, logger *zap.Logger, migrationsPath
 	}, nil
 }
 
-func (ps *PostgresService) SaveSubscription(subscription *api.Subscription) error {
+func (ps *PostgresService) SaveSubscription(subscription *api.Subscription) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
 
-	tag, err := ps.pool.Exec(ctx, queryForSaveSubscription,
+	var id int
+
+	err := ps.pool.QueryRow(ctx, queryForSaveSubscription,
 		subscription.ServiceName,
 		subscription.Price,
 		subscription.UserID,
 		subscription.StartDate,
 		subscription.EndDate,
-	)
+	).Scan(&id)
 	if err != nil {
 		ps.logger.Error("SaveSubscription: failed to save subscription", zap.Error(err))
-		return fmt.Errorf("SaveSubscription: failed to save subscription: %w", err)
+		return 0, fmt.Errorf("SaveSubscription: failed to save subscription: %w", err)
 	}
 
-	if tag.RowsAffected() == 0 {
-		ps.logger.Error("SaveSubscription: no rows affected")
-		return fmt.Errorf("SaveSubscription: no rows affected")
-	}
-
-	return nil
+	return id, nil
 }
 
 func (ps *PostgresService) Close() {
