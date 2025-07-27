@@ -1,22 +1,23 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"go.uber.org/zap"
 
-	"effmob/internal/api/decoder"
+	"effmob/internal/api"
 	"effmob/internal/storage/postgresClient"
 )
 
 func AddSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		subscription, err := decoder.DecodeRequest(logger, r.Body)
+		subscription := &api.Subscription{}
+
+		err := json.NewDecoder(r.Body).Decode(subscription)
 		if err != nil {
 			writeResponseWithError(logger, w, http.StatusBadRequest, err.Error())
-
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			logger.Error("AddSubscriptionHandler:", zap.Error(err))
+			logger.Error("AddSubscriptionHandler: cannot decode body", zap.Error(err))
 			return
 		}
 

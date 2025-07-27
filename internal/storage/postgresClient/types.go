@@ -44,5 +44,6 @@ type PostgresClient interface {
 	DeleteSubscription(int) error
 	GetSubscription(int) (*api.Subscription, error)
 	ListSubscriptions() ([]*api.Subscription, error)
+	UpdateSubscription(int, *api.Subscription) error
 	Close()
 }

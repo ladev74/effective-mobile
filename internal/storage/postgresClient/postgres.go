@@ -91,7 +91,7 @@ func (ps *PostgresService) GetSubscription(id int) (*api.Subscription, error) {
 
 	res := &api.Subscription{}
 
-	err := ps.pool.QueryRow(ctx, queryForGetSubscriptions, id).Scan(
+	err := ps.pool.QueryRow(ctx, queryForGetSubscription, id).Scan(
 		&res.ServiceName,
 		&res.Price,
 		&res.UserID,
@@ -157,6 +157,26 @@ func (ps *PostgresService) ListSubscriptions() ([]*api.Subscription, error) {
 	}
 
 	return res, nil
+}
+
+func (ps *PostgresService) UpdateSubscription(id int, subscription *api.Subscription) error {
+	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
+	defer cancel()
+
+	tag, err := ps.pool.Exec(ctx, queryForUpdateSubscription,
+		id, subscription.ServiceName, subscription.Price, subscription.UserID, subscription.StartDate, subscription.EndDate,
+	)
+	if err != nil {
+		ps.logger.Error("UpdateSubscription: failed to update subscription", zap.Error(err))
+		return fmt.Errorf("UpdateSubscription: failed to update subscription: %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		ps.logger.Error(ErrSubscriptionNotFound.Error())
+		return ErrSubscriptionNotFound
+	}
+
+	return nil
 }
 
 func (ps *PostgresService) Close() {

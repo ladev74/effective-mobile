@@ -62,6 +62,7 @@ func main() {
 	router.Delete("/subscription/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
 	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
 	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
+	router.Put("/subscription/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),
@@ -77,25 +78,20 @@ func main() {
 
 	<-ctx.Done()
 
-	gracefulShutdown(logger, &server, postgresClient)
-}
-
-func gracefulShutdown(logger *zap.Logger, srv *http.Server,
-	postgresClient ppostgresClient.PostgresClient) {
 	logger.Info("received shutdown signal")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shoutdownTime)
 	defer shutdownCancel()
 
 	logger.Info("shutting down http server")
-	if err := srv.Shutdown(shutdownCtx); err != nil {
+	if err = server.Shutdown(shutdownCtx); err != nil {
 		logger.Error("cannot shutdown http server", zap.Error(err))
 		return
 	}
 
 	postgresClient.Close()
 
-	logger.Info("stopping http server", zap.String("addr", srv.Addr))
+	logger.Info("stopping http server", zap.String("addr", server.Addr))
 
 	logger.Info("application shutdown completed successfully")
 }
