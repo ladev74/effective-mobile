@@ -60,7 +60,8 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/add-subscription", handlers.NewAddSubscription(logger, postgresClient))
+	router.Post("/subscription", handlers.AddSubscriptionHandler(logger, postgresClient))
+	router.Delete("/subscription/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),

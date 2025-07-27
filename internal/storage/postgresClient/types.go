@@ -1,6 +1,7 @@
 package postgresClient
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -11,6 +12,10 @@ import (
 
 // DefaultPostgresTimeout defines the default timeout for PostgreSQL operations.
 const DefaultPostgresTimeout = 3 * time.Second
+
+var (
+	ErrSubscriptionNotFound = fmt.Errorf("Subscription was not found for the specified id")
+)
 
 // Config defines the configuration parameters for the PostgresService,
 // including credentials and timeout configuration.
@@ -36,5 +41,6 @@ type PostgresService struct {
 // PostgresClient defines an interface for storing and retrieving subscription in a PostgreSQL database.
 type PostgresClient interface {
 	SaveSubscription(*api.Subscription) (int, error)
+	DeleteSubscription(int) error
 	Close()
 }

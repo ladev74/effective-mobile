@@ -65,6 +65,24 @@ func (ps *PostgresService) SaveSubscription(subscription *api.Subscription) (int
 	return id, nil
 }
 
+func (ps *PostgresService) DeleteSubscription(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
+	defer cancel()
+
+	tag, err := ps.pool.Exec(ctx, queryForDeleteSubscription, id)
+	if err != nil {
+		ps.logger.Error("DeleteSubscription: failed to delete subscription", zap.Error(err), zap.Int("id", id))
+		return fmt.Errorf("DeleteSubscription: failed to delete subscription: %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		ps.logger.Error(ErrSubscriptionNotFound.Error())
+		return ErrSubscriptionNotFound
+	}
+
+	return nil
+}
+
 func (ps *PostgresService) Close() {
 	ps.pool.Close()
 }
