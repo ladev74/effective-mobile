@@ -2,6 +2,7 @@ package postgresClient
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -84,7 +85,7 @@ func (ps *PostgresService) DeleteSubscription(id int) error {
 	return nil
 }
 
-func (ps *PostgresService) GetSubscriptions(id int) (*api.Subscription, error) {
+func (ps *PostgresService) GetSubscription(id int) (*api.Subscription, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
 
@@ -104,6 +105,55 @@ func (ps *PostgresService) GetSubscriptions(id int) (*api.Subscription, error) {
 		}
 		ps.logger.Error("GetSubscriptions: failed to retrieve subscription", zap.Error(err))
 		return nil, fmt.Errorf("GetSubscriptions: failed to retrieve subscription: %w", err)
+	}
+
+	return res, nil
+}
+
+func (ps *PostgresService) ListSubscriptions() ([]*api.Subscription, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
+	defer cancel()
+
+	var res []*api.Subscription
+
+	rows, err := ps.pool.Query(ctx, queryForListSubscriptions)
+	if err != nil {
+		ps.logger.Error("ListSubscription: failed to retrieve subscriptions", zap.Error(err))
+		return nil, fmt.Errorf("ListSubscription: failed to retrieve subscriptions: %w", err)
+	}
+
+	for rows.Next() {
+		var serviceName, userId, startDate string
+		var endDate sql.NullString
+		var price int
+
+		err = rows.Scan(&serviceName, &price, &userId, &startDate, &endDate)
+		if err != nil {
+			ps.logger.Error("ListSubscription: failed to fetch subscriptions", zap.Error(err))
+			return nil, fmt.Errorf("ListSubscription: failed to fetch subscriptions: %w", err)
+		}
+
+		subscription := &api.Subscription{
+			ServiceName: serviceName,
+			Price:       price,
+			UserID:      userId,
+			StartDate:   startDate,
+		}
+
+		if endDate.Valid {
+			subscription.EndDate = endDate.String
+		}
+
+		res = append(res, subscription)
+	}
+
+	if rows.Err() != nil {
+		ps.logger.Error("ListSubscription: rows error", zap.Error(rows.Err()))
+		return nil, fmt.Errorf("ListSubscription: rows error: %w", rows.Err())
+	}
+
+	if len(res) == 0 {
+		return nil, ErrSubscriptionNotFound
 	}
 
 	return res, nil

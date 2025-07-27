@@ -14,7 +14,7 @@ import (
 const DefaultPostgresTimeout = 3 * time.Second
 
 var (
-	ErrSubscriptionNotFound = fmt.Errorf("Subscription was not found for the specified id")
+	ErrSubscriptionNotFound = fmt.Errorf("subscription was not found")
 )
 
 // Config defines the configuration parameters for the PostgresService,
@@ -42,6 +42,7 @@ type PostgresService struct {
 type PostgresClient interface {
 	SaveSubscription(*api.Subscription) (int, error)
 	DeleteSubscription(int) error
-	GetSubscriptions(int) (*api.Subscription, error)
+	GetSubscription(int) (*api.Subscription, error)
+	ListSubscriptions() ([]*api.Subscription, error)
 	Close()
 }

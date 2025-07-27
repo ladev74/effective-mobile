@@ -60,7 +60,8 @@ func main() {
 
 	router.Post("/subscription", handlers.AddSubscriptionHandler(logger, postgresClient))
 	router.Delete("/subscription/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription/{id}", handlers.GetSubscriptionsHandler(logger, postgresClient))
+	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),
@@ -98,3 +99,5 @@ func gracefulShutdown(logger *zap.Logger, srv *http.Server,
 
 	logger.Info("application shutdown completed successfully")
 }
+
+// TODO: documentation

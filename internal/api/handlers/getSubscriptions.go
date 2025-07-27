@@ -9,7 +9,7 @@ import (
 	"effmob/internal/storage/postgresClient"
 )
 
-func GetSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
+func GetSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)
 		if err != nil {
@@ -18,7 +18,7 @@ func GetSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClien
 			return
 		}
 
-		subscriptions, err := pc.GetSubscriptions(id)
+		subscription, err := pc.GetSubscription(id)
 		if err != nil {
 			switch {
 			case errors.Is(err, postgresClient.ErrSubscriptionNotFound):
@@ -31,6 +31,6 @@ func GetSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClien
 			return
 		}
 
-		writeJSONResponse(logger, w, http.StatusOK, subscriptions)
+		writeJSONResponse(logger, w, http.StatusOK, subscription)
 	}
 }

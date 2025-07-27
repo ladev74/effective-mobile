@@ -14,5 +14,6 @@ const (
 	SELECT service_name, price, user_id, start_time, end_time FROM schema_subscriptions.subscriptions WHERE id = $1`
 
 	// queryForListSubscriptions selects all subscription records from the database.
-	queryForListSubscriptions = `SELECT * FROM schema_subscriptions.subscriptions`
+	queryForListSubscriptions = `
+	SELECT service_name, price, user_id, start_time, end_time FROM schema_subscriptions.subscriptions`
 )
