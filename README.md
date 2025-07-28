@@ -1,4 +1,7 @@
-<details><summary>
+<details>
+<summary>OpenAPI (Swagger) документация</summary>
+
+```yaml
 basePath: /
 definitions:
   api.Subscription:
@@ -178,8 +181,7 @@ paths:
       - subscriptions
   /subscriptions/total-price:
     get:
-      description: Calculates the total price for subscriptions filtered by user_id
-        and/or service_name during the specified date range.
+      description: Calculates the total price for subscriptions filtered by user_id and/or service_name during the specified date range.
       parameters:
       - description: User ID filter
         in: query
@@ -203,20 +205,5 @@ paths:
       - application/json
       responses:
         "200":
-          description: Total price
-          schema:
-            type: integer
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.response'
-      summary: Calculate total price of subscriptions
-      tags:
-      - subscriptions
-swagger: "2.0"
-
-</summary></details>
+          description:
+```
