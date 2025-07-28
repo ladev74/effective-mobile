@@ -15,10 +15,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 
-	"effmob/internal/api/handlers"
-	cconfig "effmob/internal/config"
-	llogger "effmob/internal/logger"
-	ppostgresClient "effmob/internal/storage/postgresClient"
+	"subscriptions/internal/api/handlers"
+	cconfig "subscriptions/internal/config"
+	llogger "subscriptions/internal/logger"
+	ppostgresClient "subscriptions/internal/storage/postgresClient"
 )
 
 const (
@@ -63,6 +63,7 @@ func main() {
 	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
 	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
 	router.Put("/subscription/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscription/total", handlers.GetTotalCostHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),

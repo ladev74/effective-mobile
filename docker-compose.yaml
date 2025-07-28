@@ -3,6 +3,16 @@ networks:
     driver: bridge
 
 services:
+  subscriptions-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: subscriptions-service
+    ports:
+      - "8081:8081"
+    networks:
+      subscriptions-service-net:
+
   postgres:
     image: postgres:17.5
     container_name: postgresClient

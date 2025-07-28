@@ -6,7 +6,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"effmob/internal/storage/postgresClient"
+	"subscriptions/internal/storage/postgresClient"
 )
 
 func ListSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {

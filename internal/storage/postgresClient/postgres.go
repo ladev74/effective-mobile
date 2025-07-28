@@ -15,7 +15,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
-	"effmob/internal/api"
+	"subscriptions/internal/api"
 )
 
 // New creates and returns a new PostgresService instance, applies default timeout if not set,
@@ -117,6 +117,7 @@ func (ps *PostgresService) ListSubscriptions() ([]*api.Subscription, error) {
 	var res []*api.Subscription
 
 	rows, err := ps.pool.Query(ctx, queryForListSubscriptions)
+	defer rows.Close()
 	if err != nil {
 		ps.logger.Error("ListSubscription: failed to retrieve subscriptions", zap.Error(err))
 		return nil, fmt.Errorf("ListSubscription: failed to retrieve subscriptions: %w", err)
@@ -177,6 +178,39 @@ func (ps *PostgresService) UpdateSubscription(id int, subscription *api.Subscrip
 	}
 
 	return nil
+}
+
+func (ps *PostgresService) ListFilteredSubscriptions(userID string, serviceName string) ([]*api.Subscription, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
+	defer cancel()
+
+	rows, err := ps.pool.Query(ctx, queryForListFilteredSubscriptions, userID, serviceName)
+	if err != nil {
+		return nil, fmt.Errorf("ListFilteredSubscriptions: %w", err)
+	}
+	defer rows.Close()
+
+	var res []*api.Subscription
+	for rows.Next() {
+		var subscription api.Subscription
+		var endDate sql.NullString
+		err = rows.Scan(
+			&subscription.ServiceName,
+			&subscription.Price,
+			&subscription.UserID,
+			&subscription.StartDate,
+			&endDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if endDate.Valid {
+			subscription.EndDate = endDate.String
+		}
+		res = append(res, &subscription)
+	}
+	return res, nil
 }
 
 func (ps *PostgresService) Close() {

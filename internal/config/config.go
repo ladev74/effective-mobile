@@ -5,9 +5,9 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 
-	"effmob/internal/api"
-	"effmob/internal/logger"
-	"effmob/internal/storage/postgresClient"
+	"subscriptions/internal/api"
+	"subscriptions/internal/logger"
+	"subscriptions/internal/storage/postgresClient"
 )
 
 // Config defines configuration parameters for the notification-service application,

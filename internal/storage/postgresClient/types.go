@@ -7,15 +7,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
-	"effmob/internal/api"
+	"subscriptions/internal/api"
 )
 
 // DefaultPostgresTimeout defines the default timeout for PostgreSQL operations.
 const DefaultPostgresTimeout = 3 * time.Second
 
-var (
-	ErrSubscriptionNotFound = fmt.Errorf("subscription was not found")
-)
+var ErrSubscriptionNotFound = fmt.Errorf("subscription was not found")
 
 // Config defines the configuration parameters for the PostgresService,
 // including credentials and timeout configuration.
@@ -45,5 +43,6 @@ type PostgresClient interface {
 	GetSubscription(int) (*api.Subscription, error)
 	ListSubscriptions() ([]*api.Subscription, error)
 	UpdateSubscription(int, *api.Subscription) error
+	ListFilteredSubscriptions(string, string) ([]*api.Subscription, error)
 	Close()
 }
