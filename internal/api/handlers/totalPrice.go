@@ -10,8 +10,19 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// TotalPriceHandler returns an HTTP handler to calculate the total price
-// for the specified time period and the user_id and/or service_name.
+// TotalPriceHandler godoc
+// @Summary Calculate total price of subscriptions
+// @Description Calculates the total price for subscriptions filtered by user_id and/or service_name during the specified date range.
+// @Tags subscriptions
+// @Produce json
+// @Param user_id query string false "User ID filter"
+// @Param service_name query string false "Service Name filter"
+// @Param start_date query string true "Start date in MM-YYYY format"
+// @Param end_date query string true "End date in MM-YYYY format"
+// @Success 200 {integer} int "Total price"
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions/total-price [get]
 func TotalPriceHandler(logger *zap.Logger, pc postgresClient.PostgresClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID, serviceName, startDate, endDate := parseQueryParams(r)

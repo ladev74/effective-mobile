@@ -1,3 +1,8 @@
+// @title Subscriptions API
+// @version 1.0
+// @description This is a service for managing subscriptions.
+// @host localhost:8081
+// @BasePath /
 package main
 
 import (
@@ -58,12 +63,12 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/subscription", handlers.AddSubscriptionHandler(logger, postgresClient))
-	router.Delete("/subscription/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
-	router.Put("/subscription/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription/total", handlers.TotalPriceHandler(logger, postgresClient))
+	router.Post("/subscriptions", handlers.AddSubscriptionHandler(logger, postgresClient))
+	router.Delete("/subscriptions/{id}", handlers.DeleteSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscriptions/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscriptions", handlers.ListSubscriptionsHandler(logger, postgresClient))
+	router.Put("/subscriptions/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
+	router.Get("/subscriptions/total", handlers.TotalPriceHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),

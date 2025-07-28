@@ -9,7 +9,15 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// ListSubscriptionsHandler returns an HTTP handler for listing all stored subscription.
+// ListSubscriptionsHandler godoc
+// @Summary List all subscriptions
+// @Description Returns a list of all subscriptions stored in the database.
+// @Tags subscriptions
+// @Produce json
+// @Success 200 {array} api.Subscription
+// @Failure 404 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions [get].
 func ListSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		subscriptions, err := pc.ListSubscriptions()

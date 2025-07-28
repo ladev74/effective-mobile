@@ -9,7 +9,17 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// DeleteSubscriptionHandler returns an HTTP handler for deleting a subscription by its id.
+// DeleteSubscriptionHandler godoc
+// @Summary Delete a subscription
+// @Description Deletes a subscription by ID
+// @Tags subscriptions
+// @Produce json
+// @Param id path int true "Subscription ID"
+// @Success 200 {object} response
+// @Failure 400 {object} response
+// @Failure 404 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions/{id} [delete]
 func DeleteSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)

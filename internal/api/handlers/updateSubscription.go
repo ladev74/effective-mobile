@@ -10,7 +10,18 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// UpdateSubscriptionHandler updates a subscription record with the given id.
+// UpdateSubscriptionHandler godoc
+// @Summary Update a subscription by ID
+// @Description Updates subscription data for the given subscription ID.
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param id path int true "Subscription ID"
+// @Param subscription body api.Subscription true "Subscription data to update"
+// @Success 200 {object} response
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions/{id} [put]
 func UpdateSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)

@@ -9,7 +9,17 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// GetSubscriptionHandler returns an HTTP handler for getting subscription by its id.
+// GetSubscriptionHandler godoc
+// @Summary Get subscription by ID
+// @Description Returns subscription details for the given subscription ID.
+// @Tags subscriptions
+// @Produce json
+// @Param id path int true "Subscription ID"
+// @Success 200 {object} api.Subscription
+// @Failure 400 {object} response
+// @Failure 404 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions/{id} [get]
 func GetSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)

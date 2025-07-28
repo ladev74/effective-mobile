@@ -10,7 +10,17 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-// AddSubscriptionHandler returns an HTTP handler for adding subscription to the database.
+// AddSubscriptionHandler godoc
+// @Summary Add a new subscription
+// @Description Adds a new subscription for a user
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param subscription body api.Subscription true "Subscription data"
+// @Success 201 {object} response
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Router /subscriptions [post]
 func AddSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		subscription := &api.Subscription{}
