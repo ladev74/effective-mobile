@@ -10,7 +10,7 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-func GetTotalCostHandler(logger *zap.Logger, pc postgresClient.PostgresClient) http.HandlerFunc {
+func GetTotalPriceHandler(logger *zap.Logger, pc postgresClient.PostgresClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID, serviceName, startDate, endDate := getQuery(r)
 
@@ -55,6 +55,7 @@ func processSubscriptions(startPeriod time.Time, endPeriod time.Time, subscripti
 		if err != nil {
 			continue
 		}
+
 		subscriptionEnd := endPeriod
 		if subscription.EndDate != "" {
 			subscriptionEnd, err = time.Parse("01-2006", subscription.EndDate)
@@ -64,6 +65,7 @@ func processSubscriptions(startPeriod time.Time, endPeriod time.Time, subscripti
 		}
 
 		var intersectStart time.Time
+
 		if subscriptionStart.After(startPeriod) {
 			intersectStart = subscriptionStart
 		} else {
@@ -71,6 +73,7 @@ func processSubscriptions(startPeriod time.Time, endPeriod time.Time, subscripti
 		}
 
 		var intersectEnd time.Time
+
 		if subscriptionEnd.Before(endPeriod) {
 			intersectEnd = subscriptionEnd
 		} else {

@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o effmob cmd/*.go
+RUN go build -o subscriptions cmd/*.go
 
 FROM alpine:latest
 
@@ -14,7 +14,7 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app/
 
-COPY --from=build /app/effmob .
+COPY --from=build /app/subscriptions .
 COPY config/config.env /app/config/config.env
 COPY database/migrations /app/database/migrations
 

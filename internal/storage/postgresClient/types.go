@@ -13,6 +13,7 @@ import (
 // DefaultPostgresTimeout defines the default timeout for PostgreSQL operations.
 const DefaultPostgresTimeout = 3 * time.Second
 
+// ErrSubscriptionNotFound indicates that the subscription was not found.
 var ErrSubscriptionNotFound = fmt.Errorf("subscription was not found")
 
 // Config defines the configuration parameters for the PostgresService,

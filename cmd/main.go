@@ -63,7 +63,7 @@ func main() {
 	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
 	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
 	router.Put("/subscription/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription/total", handlers.GetTotalCostHandler(logger, postgresClient))
+	router.Get("/subscription/total", handlers.GetTotalPriceHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),

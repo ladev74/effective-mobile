@@ -10,6 +10,9 @@ services:
     image: subscriptions-service
     ports:
       - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       subscriptions-service-net:
 

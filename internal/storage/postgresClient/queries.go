@@ -17,6 +17,7 @@ const (
 	queryForListSubscriptions = `
 	SELECT service_name, price, user_id, start_date, end_date FROM schema_subscriptions.subscriptions`
 
+	// queryForUpdateSubscription updates a subscription record with the given id from the database.
 	queryForUpdateSubscription = `
 	UPDATE schema_subscriptions.subscriptions SET service_name=$2, price=$3, user_id=$4, start_date=$5, end_date=$6 WHERE id = $1`
 
