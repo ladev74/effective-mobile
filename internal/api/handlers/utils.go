@@ -9,12 +9,14 @@ import (
 	"go.uber.org/zap"
 )
 
+// response uses in writeJSONResponse and writeResponseWithError for structured response to HTTP client.
 type response struct {
 	Status  string      `json:"status"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
+// parseIdParam extracts and validates the id URL parameters from request path.
 func parseIdParam(r *http.Request) (int, error) {
 	idStr := chi.URLParam(r, "id")
 
@@ -26,6 +28,7 @@ func parseIdParam(r *http.Request) (int, error) {
 	return id, nil
 }
 
+// writeJSONResponse sets header as application/json and writes response to HTTP client with specified data and status code.
 func writeJSONResponse(logger *zap.Logger, w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
@@ -40,6 +43,7 @@ func writeJSONResponse(logger *zap.Logger, w http.ResponseWriter, statusCode int
 	}
 }
 
+// writeResponseWithError sets header as application/json and writes response about error.
 func writeResponseWithError(logger *zap.Logger, w http.ResponseWriter, statusCode int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)

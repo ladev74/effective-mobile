@@ -10,25 +10,29 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
-func GetTotalPriceHandler(logger *zap.Logger, pc postgresClient.PostgresClient) http.HandlerFunc {
+// TotalPriceHandler returns an HTTP handler to calculate the total price
+// for the specified time period and the user_id and/or service_name.
+func TotalPriceHandler(logger *zap.Logger, pc postgresClient.PostgresClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID, serviceName, startDate, endDate := getQuery(r)
+		userID, serviceName, startDate, endDate := parseQueryParams(r)
 
 		startPeriod, err := time.Parse("01-2006", startDate)
 		if err != nil {
-			writeResponseWithError(logger, w, http.StatusBadRequest, "invalid 'from' date format. Use MM-YYYY")
+			writeResponseWithError(logger, w, http.StatusBadRequest, "invalid 'startDate' date format. Use MM-YYYY")
+			logger.Error("TotalPriceHandler: invalid startDate in query params", zap.String("startDate", startDate), zap.Error(err))
 			return
 		}
 
 		endPeriod, err := time.Parse("01-2006", endDate)
 		if err != nil {
-			writeResponseWithError(logger, w, http.StatusBadRequest, "invalid 'to' date format. Use MM-YYYY")
+			writeResponseWithError(logger, w, http.StatusBadRequest, "invalid 'endDate' date format. Use MM-YYYY")
+			logger.Error("TotalPriceHandler: invalid endDate in query params", zap.String("endDate", endDate), zap.Error(err))
 			return
 		}
 
 		subscriptions, err := pc.ListFilteredSubscriptions(userID, serviceName)
 		if err != nil {
-			logger.Error("GetTotalCostHandler: failed to load subscriptions", zap.Error(err))
+			logger.Error("TotalPriceHandler: failed to load subscriptions", zap.Error(err))
 			writeResponseWithError(logger, w, http.StatusInternalServerError, "cannot load subscriptions")
 			return
 		}
@@ -39,7 +43,8 @@ func GetTotalPriceHandler(logger *zap.Logger, pc postgresClient.PostgresClient) 
 	}
 }
 
-func getQuery(r *http.Request) (string, string, string, string) {
+// getQuery extracts the specified query parameters from the URL path.
+func parseQueryParams(r *http.Request) (string, string, string, string) {
 	userID := r.URL.Query().Get("user_id")
 	serviceName := r.URL.Query().Get("service_name")
 	startDate := r.URL.Query().Get("start_date")
@@ -48,6 +53,7 @@ func getQuery(r *http.Request) (string, string, string, string) {
 	return userID, serviceName, startDate, endDate
 }
 
+// processSubscriptions returns a calculated total price for the specified time period.
 func processSubscriptions(startPeriod time.Time, endPeriod time.Time, subscriptions []*api.Subscription) int {
 	total := 0
 	for _, subscription := range subscriptions {

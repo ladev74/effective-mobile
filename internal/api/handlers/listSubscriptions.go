@@ -9,6 +9,7 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
+// ListSubscriptionsHandler returns an HTTP handler for listing all stored subscription.
 func ListSubscriptionsHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		subscriptions, err := pc.ListSubscriptions()

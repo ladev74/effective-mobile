@@ -63,7 +63,7 @@ func main() {
 	router.Get("/subscription/{id}", handlers.GetSubscriptionHandler(logger, postgresClient))
 	router.Get("/subscription", handlers.ListSubscriptionsHandler(logger, postgresClient))
 	router.Put("/subscription/{id}", handlers.UpdateSubscriptionHandler(logger, postgresClient))
-	router.Get("/subscription/total", handlers.GetTotalPriceHandler(logger, postgresClient))
+	router.Get("/subscription/total", handlers.TotalPriceHandler(logger, postgresClient))
 
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.HttpServer.Host, config.HttpServer.Port),
@@ -96,5 +96,3 @@ func main() {
 
 	logger.Info("application shutdown completed successfully")
 }
-
-// TODO: documentation

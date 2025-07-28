@@ -10,6 +10,7 @@ import (
 	"subscriptions/internal/storage/postgresClient"
 )
 
+// UpdateSubscriptionHandler updates a subscription record with the given id.
 func UpdateSubscriptionHandler(logger *zap.Logger, pc postgresClient.PostgresClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := parseIdParam(r)

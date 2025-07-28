@@ -46,6 +46,7 @@ func New(ctx context.Context, config *Config, logger *zap.Logger, migrationsPath
 	}, nil
 }
 
+// SaveSubscription inserts the given subscription into the database and returns its generated ID.
 func (ps *PostgresService) SaveSubscription(subscription *api.Subscription) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -67,6 +68,7 @@ func (ps *PostgresService) SaveSubscription(subscription *api.Subscription) (int
 	return id, nil
 }
 
+// DeleteSubscription deletes a subscription by specified id.
 func (ps *PostgresService) DeleteSubscription(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -85,6 +87,8 @@ func (ps *PostgresService) DeleteSubscription(id int) error {
 	return nil
 }
 
+// GetSubscription return a stored subscription by specified id.
+// If there was no subscription, returns ErrSubscriptionNotFound.
 func (ps *PostgresService) GetSubscription(id int) (*api.Subscription, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -110,6 +114,8 @@ func (ps *PostgresService) GetSubscription(id int) (*api.Subscription, error) {
 	return res, nil
 }
 
+// ListSubscriptions returns all stored subscriptions.
+// If there were no subscriptions, returns ErrSubscriptionNotFound.
 func (ps *PostgresService) ListSubscriptions() ([]*api.Subscription, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -160,6 +166,7 @@ func (ps *PostgresService) ListSubscriptions() ([]*api.Subscription, error) {
 	return res, nil
 }
 
+// UpdateSubscription updates specified record by given id.
 func (ps *PostgresService) UpdateSubscription(id int, subscription *api.Subscription) error {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -180,6 +187,7 @@ func (ps *PostgresService) UpdateSubscription(id int, subscription *api.Subscrip
 	return nil
 }
 
+// ListFilteredSubscriptions retrieves a list of subscriptions filtered by user_id and/or service_name.
 func (ps *PostgresService) ListFilteredSubscriptions(userID string, serviceName string) ([]*api.Subscription, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ps.timeout)
 	defer cancel()
@@ -213,6 +221,7 @@ func (ps *PostgresService) ListFilteredSubscriptions(userID string, serviceName 
 	return res, nil
 }
 
+// Close closes a connections pool.
 func (ps *PostgresService) Close() {
 	ps.pool.Close()
 }

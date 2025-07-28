@@ -21,6 +21,8 @@ const (
 	queryForUpdateSubscription = `
 	UPDATE schema_subscriptions.subscriptions SET service_name=$2, price=$3, user_id=$4, start_date=$5, end_date=$6 WHERE id = $1`
 
+	// queryForListFilteredSubscriptions retrieves subscription records filtered by optional user_id and service_name.
+	// If user_id or service_name are empty, the corresponding filter is ignored (i.e., returns all).
 	queryForListFilteredSubscriptions = `
 	SELECT service_name, price, user_id, start_date, end_date 
 	FROM schema_subscriptions.subscriptions WHERE ($1 = '' OR user_id = $1) AND ($2 = '' OR service_name = $2)`
